@@ -28,3 +28,16 @@ func (u User) SaveUser()(int64,error) {
 	}
 	return id,nil
 }
+
+func (u User) Queryuser()(error) {
+	md5Hash :=md5.New()
+	md5Hash.Write([]byte(u.password))
+	passwordBytes := md5Hash.Sum(nil)
+	u.password = hex.EncodeToString(passwordBytes)
+	row:=db_mysql.Db.QueryRow("select phone from users where phone = ? and password = ?", u.Phone,u.password)
+	err := row.Scan(&u.Phone)
+	if err != nil {
+		return err
+	}
+	return nil
+}
